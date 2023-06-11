@@ -1,0 +1,96 @@
+*** Reading local file: /root/airflow/logs/dag_id=load_data_to_redshift/run_id=manual__2023-06-11T12:43:19.686173+00:00/task_id=calculate_location_traffic/attempt=1.log
+[2023-06-11, 18:13:44 IST] {taskinstance.py:1159} INFO - Dependencies all met for <TaskInstance: load_data_to_redshift.calculate_location_traffic manual__2023-06-11T12:43:19.686173+00:00 [queued]>
+[2023-06-11, 18:13:45 IST] {taskinstance.py:1159} INFO - Dependencies all met for <TaskInstance: load_data_to_redshift.calculate_location_traffic manual__2023-06-11T12:43:19.686173+00:00 [queued]>
+[2023-06-11, 18:13:45 IST] {taskinstance.py:1356} INFO - 
+--------------------------------------------------------------------------------
+[2023-06-11, 18:13:45 IST] {taskinstance.py:1357} INFO - Starting attempt 1 of 1
+[2023-06-11, 18:13:45 IST] {taskinstance.py:1358} INFO - 
+--------------------------------------------------------------------------------
+[2023-06-11, 18:13:45 IST] {taskinstance.py:1377} INFO - Executing <Task(PostgresOperator): calculate_location_traffic> on 2023-06-11 12:43:19.686173+00:00
+[2023-06-11, 18:13:45 IST] {standard_task_runner.py:52} INFO - Started process 17934 to run task
+[2023-06-11, 18:13:45 IST] {standard_task_runner.py:79} INFO - Running: ['***', 'tasks', 'run', 'load_data_to_redshift', 'calculate_location_traffic', 'manual__2023-06-11T12:43:19.686173+00:00', '--job-id', '7', '--raw', '--subdir', 'DAGS_FOLDER/cd0031-automate-data-pipelines/lesson-3-***-and-aws/starter/l3_e4_s3_to_redshift.py', '--cfg-path', '/tmp/tmp6nzc506u', '--error-file', '/tmp/tmpcd9jv5ad']
+[2023-06-11, 18:13:45 IST] {standard_task_runner.py:80} INFO - Job 7: Subtask calculate_location_traffic
+[2023-06-11, 18:13:46 IST] {task_command.py:370} INFO - Running <TaskInstance: load_data_to_redshift.calculate_location_traffic manual__2023-06-11T12:43:19.686173+00:00 [running]> on host 8a1f50169dcda5619dd3fa088d9950ce380ce77d-5f6f5fbb79-4lh77
+[2023-06-11, 18:13:47 IST] {taskinstance.py:1571} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=Airflow
+AIRFLOW_CTX_DAG_ID=load_data_to_redshift
+AIRFLOW_CTX_TASK_ID=calculate_location_traffic
+AIRFLOW_CTX_EXECUTION_DATE=2023-06-11T12:43:19.686173+00:00
+AIRFLOW_CTX_TRY_NUMBER=1
+AIRFLOW_CTX_DAG_RUN_ID=manual__2023-06-11T12:43:19.686173+00:00
+[2023-06-11, 18:13:47 IST] {sql.py:262} INFO - Executing: 
+BEGIN;
+DROP TABLE IF EXISTS station_traffic;
+CREATE TABLE station_traffic AS
+SELECT
+    DISTINCT(t.from_station_id) AS station_id,
+    t.from_station_name AS station_name,
+    num_departures,
+    num_arrivals
+FROM trips t
+JOIN (
+    SELECT
+        from_station_id,
+        COUNT(from_station_id) AS num_departures
+    FROM trips
+    GROUP BY from_station_id
+) AS fs ON t.from_station_id = fs.from_station_id
+JOIN (
+    SELECT
+        to_station_id,
+        COUNT(to_station_id) AS num_arrivals
+    FROM trips
+    GROUP BY to_station_id
+) AS ts ON t.from_station_id = ts.to_station_id
+[2023-06-11, 18:13:47 IST] {base.py:68} INFO - Using connection ID 'redshift' for task execution.
+[2023-06-11, 18:13:48 IST] {base.py:68} INFO - Using connection ID 'redshift' for task execution.
+[2023-06-11, 18:13:50 IST] {sql.py:375} INFO - Running statement: 
+BEGIN;
+DROP TABLE IF EXISTS station_traffic;
+CREATE TABLE station_traffic AS
+SELECT
+    DISTINCT(t.from_station_id) AS station_id,
+    t.from_station_name AS station_name,
+    num_departures,
+    num_arrivals
+FROM trips t
+JOIN (
+    SELECT
+        from_station_id,
+        COUNT(from_station_id) AS num_departures
+    FROM trips
+    GROUP BY from_station_id
+) AS fs ON t.from_station_id = fs.from_station_id
+JOIN (
+    SELECT
+        to_station_id,
+        COUNT(to_station_id) AS num_arrivals
+    FROM trips
+    GROUP BY to_station_id
+) AS ts ON t.from_station_id = ts.to_station_id, parameters: None
+[2023-06-11, 18:13:50 IST] {taskinstance.py:1889} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/dist-packages/redshift_connector/core.py", line 1631, in execute
+    ps = cache["ps"][key]
+KeyError: ('\nBEGIN;\nDROP TABLE IF EXISTS station_traffic;\nCREATE TABLE station_traffic AS\nSELECT\n    DISTINCT(t.from_station_id) AS station_id,\n    t.from_station_name AS station_name,\n    num_departures,\n    num_arrivals\nFROM trips t\nJOIN (\n    SELECT\n        from_station_id,\n        COUNT(from_station_id) AS num_departures\n    FROM trips\n    GROUP BY from_station_id\n) AS fs ON t.from_station_id = fs.from_station_id\nJOIN (\n    SELECT\n        to_station_id,\n        COUNT(to_station_id) AS num_arrivals\n    FROM trips\n    GROUP BY to_station_id\n) AS ts ON t.from_station_id = ts.to_station_id', ())
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/dist-packages/airflow/providers/common/sql/operators/sql.py", line 274, in execute
+    **extra_kwargs,
+  File "/usr/local/lib/python3.7/dist-packages/airflow/providers/common/sql/hooks/sql.py", line 349, in run
+    self._run_command(cur, sql_statement, parameters)
+  File "/usr/local/lib/python3.7/dist-packages/airflow/providers/common/sql/hooks/sql.py", line 380, in _run_command
+    cur.execute(sql_statement)
+  File "/usr/local/lib/python3.7/dist-packages/redshift_connector/cursor.py", line 240, in execute
+    self._c.execute(self, operation, args)
+  File "/usr/local/lib/python3.7/dist-packages/redshift_connector/core.py", line 1701, in execute
+    self.handle_messages(cursor)
+  File "/usr/local/lib/python3.7/dist-packages/redshift_connector/core.py", line 1969, in handle_messages
+    raise self.error
+redshift_connector.error.ProgrammingError: {'S': 'ERROR', 'C': '42601', 'M': 'cannot insert multiple commands into a prepared statement', 'F': '../src/pg/src/backend/tcop/postgres.c', 'L': '3916', 'R': 'exec_parse_message'}
+[2023-06-11, 18:13:50 IST] {taskinstance.py:1400} INFO - Marking task as FAILED. dag_id=load_data_to_redshift, task_id=calculate_location_traffic, execution_date=20230611T124319, start_date=20230611T124344, end_date=20230611T124350
+[2023-06-11, 18:13:50 IST] {standard_task_runner.py:97} ERROR - Failed to execute job 7 for task calculate_location_traffic ({'S': 'ERROR', 'C': '42601', 'M': 'cannot insert multiple commands into a prepared statement', 'F': '../src/pg/src/backend/tcop/postgres.c', 'L': '3916', 'R': 'exec_parse_message'}; 17934)
+[2023-06-11, 18:13:51 IST] {local_task_job.py:156} INFO - Task exited with return code 1
+[2023-06-11, 18:13:51 IST] {local_task_job.py:273} INFO - 0 downstream tasks scheduled from follow-on schedule check
