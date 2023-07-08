@@ -19,14 +19,7 @@ def main():
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 
-    conn = psycopg2.connect(
-        host=config['CLUSTER']['HOST'],
-        dbname=config['CLUSTER']['DB_NAME'],
-        user=config['CLUSTER']['DB_USER'],
-        password=config['CLUSTER']['DB_PASSWORD'],
-        port=config['CLUSTER']['DB_PORT'],
-        iam_role=config['IAM_ROLE']['ARN']
-    )
+    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['CLUSTER'].values()))
     cur = conn.cursor()
     
     load_staging_tables(cur, conn)
