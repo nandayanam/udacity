@@ -1,0 +1,9 @@
+{
+	"name": "ADFTutorial-eta",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "66aa09f7-2bed-4774-953b-fa113c429a17",
+		"tenantId": "d5cc731e-ebe0-4598-9d51-565c1e3d9dad"
+	}
+}
